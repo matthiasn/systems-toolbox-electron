@@ -47,8 +47,10 @@
 
 (defn relay-msg [{:keys [current-state msg-type msg-meta msg-payload]}]
   (let [window-id (:window-id msg-meta)
-        window-ids (if (= window-id :broadcast)
-                     (keys (:windows current-state))
+        active (:active current-state)
+        window-ids (case window-id
+                     :broadcast (keys (:windows current-state))
+                     :active [active]
                      [window-id])]
     (doseq [window-id window-ids]
       (let [window (get-in current-state [:windows window-id])
