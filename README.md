@@ -1,14 +1,14 @@
 # systems-toolbox-electron
 
-A Clojure library designed to ... well, that part is up to you.
+Building blocks for Electron-based desktop applications written in ClojureScript.
 
 ## Usage
 
-FIXME
+See for example **[inspect](https://github.com/matthiasn/inspect)** or **[iWasWhere](https://github.com/matthiasn/iWasWhere)**.
 
 ## License
 
-Copyright © 2017 FIXME
+Copyright © 2017 Matthias Nehlsen
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
