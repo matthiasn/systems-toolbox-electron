@@ -1,4 +1,4 @@
-(defproject matthiasn/systems-toolbox-electron "0.6.2"
+(defproject matthiasn/systems-toolbox-electron "0.6.3"
   :description "Building blocks for ClojureScript systems on top of Electron"
   :url "https://github.com/matthiasn/systems-toolbox-electron"
   :license {:name "Eclipse Public License"

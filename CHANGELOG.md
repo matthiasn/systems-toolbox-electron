@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.3] - 2017-09-16
+### Changed
+- only create window with name id once
+
+## [0.6.2] - 2017-09-16
+### Changed
+- active window routing
+
 ## [0.6.1] - 2017-09-15
 ### Changed
 - IPC and window manager extracted from inspect
