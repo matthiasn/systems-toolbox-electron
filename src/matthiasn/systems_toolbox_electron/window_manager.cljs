@@ -6,10 +6,9 @@
 (defn new-window [{:keys [current-state cmp-state msg-payload]}]
   (let [{:keys [url width height window-id]} msg-payload]
     (if (get-in current-state [:windows window-id])
-      (do (info "window exists already" window-id)
+      (do (info "WM: window id exists, not creating new one:" window-id)
           {})
-      (let [
-            window (BrowserWindow. (clj->js {:width  (or width 1200)
+      (let [window (BrowserWindow. (clj->js {:width  (or width 1200)
                                              :height (or height 800)
                                              :show   false}))
             window-id (or window-id (stc/make-uuid))
@@ -24,17 +23,17 @@
                             (dissoc new-state :loading))
                         new-state)
             focus (fn [_]
-                    (info "Focused" window-id)
+                    (debug "Focused" window-id)
                     (swap! cmp-state assoc-in [:active] window-id))
             blur (fn [_]
-                   (info "Blurred" window-id)
+                   (debug "Blurred" window-id)
                    (swap! cmp-state assoc-in [:active] nil))
             close (fn [_]
-                    (info "Closed" window-id)
+                    (debug "Closed" window-id)
                     (swap! cmp-state assoc-in [:active] nil)
                     (swap! cmp-state update-in [:windows] dissoc window-id))
             ready (fn [_]
-                    (info "ready" window-id)
+                    (debug "ready" window-id)
                     (show)
                     (.send (.-webContents window) "window-id" (str window-id)))]
         (info "Opening new window" url)
