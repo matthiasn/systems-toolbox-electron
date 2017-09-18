@@ -3,19 +3,34 @@
             [electron :refer [BrowserWindow]]
             [matthiasn.systems-toolbox.component :as stc]))
 
+(defn load-new [url]
+  (let [window (BrowserWindow. (clj->js {:width 1200 :height 800 :show false}))]
+    (info "WM load-new" url)
+    (.loadURL window url)
+    window))
+
+(defn serialize [msg-type msg-payload msg-meta]
+  (let [serializable [msg-type {:msg-payload msg-payload :msg-meta msg-meta}]]
+    (pr-str serializable)))
+
 (defn new-window [{:keys [current-state cmp-state msg-payload]}]
   (let [{:keys [url width height window-id]} msg-payload]
     (if (get-in current-state [:windows window-id])
       (do (info "WM: window id exists, not creating new one:" window-id)
           {})
-      (let [window (BrowserWindow. (clj->js {:width  (or width 1200)
-                                             :height (or height 800)
-                                             :show   false}))
-            window-id (or window-id (stc/make-uuid))
-            show #(.show window)
+      (let [spare (:spare current-state)
             url (str "file://" (:app-path current-state) "/" url)
+            new-spare (load-new url)
+            new-spare-wc (.-webContents new-spare)
+            new-spare-init #(let [js "window.location = '/#/empty'"
+                                  s (serialize :exec/js {:js js} {})]
+                              (.send new-spare-wc "relay" s))
+            window-id (or window-id (stc/make-uuid))
+            window (or spare (load-new url))
+            show #(.show window)
             new-state (-> current-state
                           (assoc-in [:main-window] window)
+                          (assoc-in [:spare] new-spare)
                           (assoc-in [:windows window-id] window)
                           (assoc-in [:active] window-id))
             new-state (if-let [loading (:loading new-state)]
@@ -27,7 +42,8 @@
                     (swap! cmp-state assoc-in [:active] window-id))
             blur (fn [_]
                    (debug "Blurred" window-id)
-                   (swap! cmp-state assoc-in [:active] nil))
+                   ;(swap! cmp-state assoc-in [:active] nil)
+                   )
             close (fn [_]
                     (debug "Closed" window-id)
                     (swap! cmp-state assoc-in [:active] nil)
@@ -36,12 +52,17 @@
                     (debug "ready" window-id)
                     (show)
                     (.send (.-webContents window) "window-id" (str window-id)))]
-        (info "Opening new window" url)
+        (info "Opening new window" url window-id)
         (.on window "focus" #(js/setTimeout focus 10))
+        (.on new-spare-wc "did-finish-load" new-spare-init)
+        (if spare
+          (do (info "WM using spare" spare)
+              (show)
+              (.send (.-webContents window) "window-id" (str window-id)))
+          (.on (.-webContents window) "did-finish-load" #(js/setTimeout show 10)))
         (.once window "ready-to-show" ready)
         (.on window "blur" blur)
         (.on window "close" close)
-        (.loadURL window url)
         {:new-state new-state}))))
 
 (defn active-window [current-state]
@@ -49,7 +70,7 @@
     (get-in current-state [:windows active])))
 
 (defn relay-msg [{:keys [current-state msg-type msg-meta msg-payload]}]
-  (let [window-id (:window-id msg-meta)
+  (let [window-id (or (:window-id msg-meta) :active)
         active (:active current-state)
         window-ids (case window-id
                      :broadcast (keys (:windows current-state))
@@ -58,10 +79,10 @@
     (doseq [window-id window-ids]
       (let [window (get-in current-state [:windows window-id])
             web-contents (when window (.-webContents window))
-            serializable [msg-type {:msg-payload msg-payload :msg-meta msg-meta}]]
+            serialized (serialize msg-type msg-payload msg-meta)]
         (when web-contents
           (debug "Relaying" msg-type window-id)
-          (.send web-contents "relay" (pr-str serializable))))))
+          (.send web-contents "relay" serialized)))))
   {})
 
 (defn dev-tools [{:keys [current-state]}]
