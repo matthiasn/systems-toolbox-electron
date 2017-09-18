@@ -3,25 +3,27 @@
             [electron :refer [BrowserWindow]]
             [matthiasn.systems-toolbox.component :as stc]))
 
-(defn load-new [url]
-  (let [window (BrowserWindow. (clj->js {:width 1200 :height 800 :show false}))]
-    (info "WM load-new" url)
-    (.loadURL window url)
-    window))
-
 (defn serialize [msg-type msg-payload msg-meta]
   (let [serializable [msg-type {:msg-payload msg-payload :msg-meta msg-meta}]]
     (pr-str serializable)))
 
 (defn new-window [{:keys [current-state cmp-state msg-payload]}]
-  (let [{:keys [url width height window-id]} msg-payload]
+  (let [{:keys [url width height window-id cached]} msg-payload]
     (if (get-in current-state [:windows window-id])
       (do (info "WM: window id exists, not creating new one:" window-id)
           {})
-      (let [spare (:spare current-state)
+      (let [load-new (fn [url]
+                       (let [window (BrowserWindow.
+                                      (clj->js {:width  (or width 1200)
+                                                :height (or height 800)
+                                                :show   false}))]
+                         (info "WM load-new" url)
+                         (.loadURL window url)
+                         window))
+            spare (when cached (:spare current-state))
             url (str "file://" (:app-path current-state) "/" url)
-            new-spare (load-new url)
-            new-spare-wc (.-webContents new-spare)
+            new-spare (when cached (load-new url))
+            new-spare-wc (when cached (.-webContents new-spare))
             new-spare-init #(let [js "window.location = '/#/empty'"
                                   s (serialize :exec/js {:js js} {})]
                               (.send new-spare-wc "relay" s))
@@ -54,7 +56,7 @@
                     (.send (.-webContents window) "window-id" (str window-id)))]
         (info "Opening new window" url window-id)
         (.on window "focus" #(js/setTimeout focus 10))
-        (.on new-spare-wc "did-finish-load" new-spare-init)
+        (when cached (.on new-spare-wc "did-finish-load" new-spare-init))
         (if spare
           (do (info "WM using spare" spare)
               (show)
