@@ -94,8 +94,10 @@
   {})
 
 (defn close-window [{:keys [current-state msg-meta]}]
-  (let [window-id (or (:window-id msg-meta)
-                      (:active current-state))]
+  (let [window-id (:window-id msg-meta)
+        window-id (if (= :active window-id)
+                    (:active current-state)
+                    window-id)]
     (if-let [window (get-in current-state [:windows window-id])]
       (let [new-state (update-in current-state [:windows] dissoc window-id)]
         (info "Closing:" window-id window)
