@@ -1,17 +1,19 @@
 (ns matthiasn.systems-toolbox-electron.ipc-renderer
   (:require [electron :refer [ipcRenderer]]
-            [taoensso.timbre :as timbre :refer-macros [info debug]]
+            [taoensso.timbre :as timbre :refer-macros [info debug error]]
             [cljs.reader :refer [read-string]]))
 
 (defn state-fn [put-fn]
   (let [state (atom {})
         relay (fn [ev m]
-                (let [parsed (read-string m)
-                      msg-type (first parsed)
-                      {:keys [msg-payload msg-meta]} (second parsed)
-                      msg (with-meta [msg-type msg-payload] msg-meta)]
-                  (debug "IPC received:" (str msg-type))
-                  (put-fn msg)))
+                (try
+                  (let [parsed (read-string m)
+                        msg-type (first parsed)
+                        {:keys [msg-payload msg-meta]} (second parsed)
+                        msg (with-meta [msg-type msg-payload] msg-meta)]
+                    (debug "IPC received" msg-type)
+                    (put-fn msg))
+                  (catch js/Object e (error "when parsing" m))))
         id-handler (fn [ev window-id]
                      (info "IPC: window-id" window-id)
                      (swap! state assoc-in [:window-id] window-id))]
