@@ -13,7 +13,7 @@
                         msg (with-meta [msg-type msg-payload] msg-meta)]
                     (debug "IPC received" msg-type)
                     (put-fn msg))
-                  (catch js/Object e (error "when parsing" m))))
+                  (catch js/Object e (error e "when parsing" m))))
         id-handler (fn [ev window-id]
                      (info "IPC: window-id" window-id)
                      (swap! state assoc-in [:window-id] window-id))]
