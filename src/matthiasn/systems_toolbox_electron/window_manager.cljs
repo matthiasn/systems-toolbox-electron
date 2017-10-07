@@ -106,6 +106,30 @@
       (do (warn "WM: no such window" window-id)
           {}))))
 
+(defn minimize-window [{:keys [current-state msg-meta msg-payload]}]
+  (let [window-id (or (:window-id msg-meta) :active)
+        active (:active current-state)
+        window-ids (case window-id
+                     :broadcast (keys (:windows current-state))
+                     :active [active]
+                     [window-id])]
+    (doseq [window-id window-ids]
+      (let [window (get-in current-state [:windows window-id])]
+        (.minimize window))))
+  {})
+
+(defn restore-window [{:keys [current-state msg-meta msg-payload]}]
+  (let [window-id (or (:window-id msg-meta) :active)
+        active (:active current-state)
+        window-ids (case window-id
+                     :broadcast (keys (:windows current-state))
+                     :active [active]
+                     [window-id])]
+    (doseq [window-id window-ids]
+      (let [window (get-in current-state [:windows window-id])]
+        (.restore window))))
+  {})
+
 (defn activate [{:keys [current-state]}]
   (info "Activate APP")
   (when (empty? (:windows current-state))
@@ -119,4 +143,6 @@
                          {:window/new       new-window
                           :window/activate  activate
                           :window/close     close-window
+                          :window/minimize  minimize-window
+                          :window/restore   restore-window
                           :window/dev-tools dev-tools})}))
