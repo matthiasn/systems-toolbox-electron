@@ -130,6 +130,30 @@
         (.restore window))))
   {})
 
+(defn hide-window [{:keys [current-state msg-meta msg-payload]}]
+  (let [window-id (or (:window-id msg-meta) :active)
+        active (:active current-state)
+        window-ids (case window-id
+                     :broadcast (keys (:windows current-state))
+                     :active [active]
+                     [window-id])]
+    (doseq [window-id window-ids]
+      (let [window (get-in current-state [:windows window-id])]
+        (.hide window))))
+  {})
+
+(defn show-window [{:keys [current-state msg-meta msg-payload]}]
+  (let [window-id (or (:window-id msg-meta) :active)
+        active (:active current-state)
+        window-ids (case window-id
+                     :broadcast (keys (:windows current-state))
+                     :active [active]
+                     [window-id])]
+    (doseq [window-id window-ids]
+      (let [window (get-in current-state [:windows window-id])]
+        (.show window))))
+  {})
+
 (defn activate [{:keys [current-state]}]
   (info "Activate APP")
   (when (empty? (:windows current-state))
@@ -145,4 +169,6 @@
                           :window/close     close-window
                           :window/minimize  minimize-window
                           :window/restore   restore-window
+                          :window/hide      hide-window
+                          :window/show      show-window
                           :window/dev-tools dev-tools})}))
