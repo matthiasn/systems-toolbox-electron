@@ -54,9 +54,7 @@
             ready (fn [_]
                     (debug "ready" window-id)
                     (show)
-                    (js/setTimeout send-id 1000)
-                    (js/setTimeout send-id 2000)
-                    (js/setTimeout send-id 5000))]
+                    (dotimes [n 10] (js/setTimeout send-id (* n 1000))))]
         (info "Opening new window" url window-id)
         (.on window "focus" #(js/setTimeout focus 10))
         (when cached (.on new-spare-wc "did-finish-load" new-spare-init))
