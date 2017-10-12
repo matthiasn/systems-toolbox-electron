@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.11] - 2017-10-13
+### Changed
+- set window-id with delay
+
 ## [0.6.10] - 2017-10-08
 ### Changed
 - hide and show windows

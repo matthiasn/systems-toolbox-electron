@@ -24,7 +24,7 @@
             url (str "file://" (:app-path current-state) "/" url)
             new-spare (when cached (load-new url))
             new-spare-wc (when cached (.-webContents new-spare))
-            new-spare-init #(let [js "window.location = '/#/empty'"
+            new-spare-init #(let [js "window.location = ''"
                                   s (serialize :exec/js {:js js} {})]
                               (.send new-spare-wc "relay" s))
             window-id (or window-id (stc/make-uuid))
@@ -50,10 +50,13 @@
                     (debug "Closed" window-id)
                     (swap! cmp-state assoc-in [:active] nil)
                     (swap! cmp-state update-in [:windows] dissoc window-id))
+            send-id #(.send (.-webContents window) "window-id" (str window-id))
             ready (fn [_]
                     (debug "ready" window-id)
                     (show)
-                    (.send (.-webContents window) "window-id" (str window-id)))]
+                    (js/setTimeout send-id 1000)
+                    (js/setTimeout send-id 2000)
+                    (js/setTimeout send-id 5000))]
         (info "Opening new window" url window-id)
         (.on window "focus" #(js/setTimeout focus 10))
         (when cached (.on new-spare-wc "did-finish-load" new-spare-init))
