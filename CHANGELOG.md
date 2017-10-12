@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.13] - 2017-10-13
+### Changed
+- window-id in sessionStorage
+
 ## [0.6.12] - 2017-10-13
 ### Changed
 - window-id in cookie

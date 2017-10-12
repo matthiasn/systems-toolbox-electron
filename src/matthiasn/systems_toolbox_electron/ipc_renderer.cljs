@@ -1,7 +1,6 @@
 (ns matthiasn.systems-toolbox-electron.ipc-renderer
   (:require [electron :refer [ipcRenderer]]
             [taoensso.timbre :as timbre :refer-macros [info debug error]]
-            [goog.net.cookies]
             [cljs.reader :refer [read-string]]))
 
 (defn state-fn [put-fn]
@@ -17,14 +16,14 @@
                   (catch js/Object e (error e "when parsing" m))))
         id-handler (fn [ev window-id]
                      (info "IPC: window-id" window-id)
-                     (.set goog.net.cookies "window-id" window-id))]
+                     (aset js/sessionStorage "windowId" window-id))]
     (.on ipcRenderer "relay" relay)
     (.on ipcRenderer "window-id" id-handler)
     (info "Starting IPC Component")
     {:state state}))
 
 (defn relay-msg [{:keys [current-state msg-type msg-meta msg-payload]}]
-  (let [window-id (.get goog.net.cookies "window-id")
+  (let [window-id (aget js/sessionStorage "windowId")
         msg-meta (assoc-in msg-meta [:window-id] window-id)
         serializable [msg-type {:msg-payload msg-payload
                                 :msg-meta    msg-meta}]]
