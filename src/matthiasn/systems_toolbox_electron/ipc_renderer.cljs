@@ -1,7 +1,8 @@
 (ns matthiasn.systems-toolbox-electron.ipc-renderer
   (:require [electron :refer [ipcRenderer]]
             [taoensso.timbre :as timbre :refer-macros [info debug error]]
-            [cljs.reader :refer [read-string]]))
+            [cljs.reader :refer [read-string]]
+            [clojure.set :as set]))
 
 (defn state-fn [put-fn]
   (let [state (atom {})
@@ -32,6 +33,11 @@
   {})
 
 (defn cmp-map [cmp-id relay-types]
-  {:cmp-id      cmp-id
-   :state-fn    state-fn
-   :handler-map (zipmap relay-types (repeat relay-msg))})
+  (let [relay-types (set/union (set relay-types)
+                               #{:firehose/cmp-put
+                                 :firehose/cmp-recv
+                                 :firehose/cmp-publish-state
+                                 :firehose/cmp-recv-state})]
+    {:cmp-id      cmp-id
+     :state-fn    state-fn
+     :handler-map (zipmap relay-types (repeat relay-msg))}))
