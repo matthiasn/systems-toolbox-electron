@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.15] - 2017-11-03
+### Changed
+- set progress in dock
+
 ## [0.6.14] - 2017-10-26
 ### Changed
 - always relay firehose messages

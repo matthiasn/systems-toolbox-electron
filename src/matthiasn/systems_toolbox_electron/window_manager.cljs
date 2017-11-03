@@ -1,6 +1,6 @@
 (ns matthiasn.systems-toolbox-electron.window-manager
   (:require [taoensso.timbre :as timbre :refer-macros [info debug warn]]
-            [electron :refer [BrowserWindow]]
+            [electron :refer [app BrowserWindow]]
             [matthiasn.systems-toolbox.component :as stc]
             [clojure.set :as set]))
 
@@ -108,6 +108,18 @@
       (do (warn "WM: no such window" window-id)
           {}))))
 
+(defn set-progress [{:keys [current-state msg-payload msg-meta]}]
+  (let [window-id (:window-id msg-meta)
+        window-id (if (= :active window-id)
+                    (:active current-state)
+                    window-id)
+        progress (:v msg-payload)
+        dock (.-dock app)]
+    (info "Progress" progress)
+    (when-let [window (get-in current-state [:windows window-id])]
+      (.setProgressBar window progress))
+    {}))
+
 (defn minimize-window [{:keys [current-state msg-meta msg-payload]}]
   (let [window-id (or (:window-id msg-meta) :active)
         active (:active current-state)
@@ -178,4 +190,5 @@
                           :window/restore   restore-window
                           :window/hide      hide-window
                           :window/show      show-window
+                          :window/progress  set-progress
                           :window/dev-tools dev-tools})}))
