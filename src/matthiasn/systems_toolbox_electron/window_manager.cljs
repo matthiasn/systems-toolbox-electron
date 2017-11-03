@@ -115,7 +115,7 @@
                     window-id)
         progress (:v msg-payload)
         dock (.-dock app)]
-    (info "Progress" progress)
+    (debug "Progress" progress)
     (when-let [window (get-in current-state [:windows window-id])]
       (.setProgressBar window progress))
     {}))
