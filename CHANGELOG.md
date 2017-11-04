@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.17] - 2017-11-04
+### Changed
+- hide all windows
+
 ## [0.6.16] - 2017-11-03
 ### Changed
 - set progress in dock

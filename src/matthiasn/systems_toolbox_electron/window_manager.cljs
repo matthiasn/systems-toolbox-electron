@@ -11,8 +11,7 @@
 (defn new-window [{:keys [current-state cmp-state msg-payload]}]
   (let [{:keys [url width height window-id cached]} msg-payload]
     (if (get-in current-state [:windows window-id])
-      (do (info "WM: window id exists, not creating new one:" window-id)
-          {})
+      (do (info "WM: window id exists, not creating new one:" window-id) {})
       (let [load-new (fn [url]
                        (let [window (BrowserWindow.
                                       (clj->js {:width  (or width 1200)
@@ -144,28 +143,14 @@
         (.restore window))))
   {})
 
-(defn hide-window [{:keys [current-state msg-meta msg-payload]}]
-  (let [window-id (or (:window-id msg-meta) :active)
-        active (:active current-state)
-        window-ids (case window-id
-                     :broadcast (keys (:windows current-state))
-                     :active [active]
-                     [window-id])]
-    (doseq [window-id window-ids]
-      (let [window (get-in current-state [:windows window-id])]
-        (.hide window))))
+(defn hide-windows [{:keys [current-state]}]
+  (doseq [[id window] (:windows current-state)]
+    (.hide window))
   {})
 
-(defn show-window [{:keys [current-state msg-meta msg-payload]}]
-  (let [window-id (or (:window-id msg-meta) :active)
-        active (:active current-state)
-        window-ids (case window-id
-                     :broadcast (keys (:windows current-state))
-                     :active [active]
-                     [window-id])]
-    (doseq [window-id window-ids]
-      (let [window (get-in current-state [:windows window-id])]
-        (.show window))))
+(defn show-windows [{:keys [current-state]}]
+  (doseq [[id window] (:windows current-state)]
+    (.show window))
   {})
 
 (defn activate [{:keys [current-state]}]
@@ -188,7 +173,7 @@
                           :window/close     close-window
                           :window/minimize  minimize-window
                           :window/restore   restore-window
-                          :window/hide      hide-window
-                          :window/show      show-window
+                          :window/hide      hide-windows
+                          :window/show      show-windows
                           :window/progress  set-progress
                           :window/dev-tools dev-tools})}))
