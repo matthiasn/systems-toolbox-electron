@@ -50,7 +50,9 @@
                     (debug "Closed" window-id)
                     (swap! cmp-state assoc-in [:active] nil)
                     (swap! cmp-state update-in [:windows] dissoc window-id))
-            send-id #(.send (.-webContents window) "window-id" (str window-id))
+            send-id #(let [window (get-in @cmp-state [:windows window-id])]
+                       (when window
+                         (.send (.-webContents window) "window-id" (str window-id))))
             ready (fn [_]
                     (debug "ready" window-id)
                     (show)
