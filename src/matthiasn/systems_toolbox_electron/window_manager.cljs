@@ -27,7 +27,7 @@
             new-spare-init #(let [js "window.location = ''"
                                   s (serialize :exec/js {:js js} {})]
                               (.send new-spare-wc "relay" s))
-            window-id (or window-id (stc/make-uuid))
+            window-id (or window-id (str (stc/make-uuid)))
             window (or spare (load-new url))
             show #(.show window)
             new-state (-> current-state
@@ -75,7 +75,7 @@
     (get-in current-state [:windows active])))
 
 (defn relay-msg [{:keys [current-state msg-type msg-meta msg-payload]}]
-  (let [window-id (or (:window-id msg-meta) :active)
+  (let [window-id (or (:window-id msg-meta) :broadcast)
         active (:active current-state)
         window-ids (case window-id
                      :broadcast (keys (:windows current-state))

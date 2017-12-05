@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
-## [0.6.1] - 2017-11-08
+## [0.6.19] - 2017-12-05
+### Changed
+- window-id as string
+
+## [0.6.18] - 2017-11-08
 ### Changed
 - only send window id when window still exists
 
