@@ -1,14 +1,13 @@
 (ns matthiasn.systems-toolbox-electron.ipc-main
-  (:require [clojure.string :as str]
-            [taoensso.timbre :as timbre :refer-macros [info debug]]
+  (:require [taoensso.timbre :refer-macros [info debug]]
             [electron :refer [ipcMain]]
-            [cljs.reader :refer [read-string]]
-            [clojure.pprint :as pp]))
+            [cognitect.transit :as t]))
 
 (defn state-fn [put-fn]
   (let [state (atom {})
+        r (t/reader :json)
         relay (fn [ev m]
-                (let [parsed (read-string m)
+                (let [parsed (t/read r m)
                       msg-type (first parsed)
                       {:keys [msg-payload msg-meta]} (second parsed)
                       msg (with-meta [msg-type msg-payload] msg-meta)]

@@ -1,12 +1,14 @@
 (ns matthiasn.systems-toolbox-electron.window-manager
-  (:require [taoensso.timbre :as timbre :refer-macros [info debug warn]]
+  (:require [taoensso.timbre :refer-macros [info debug warn]]
             [electron :refer [app BrowserWindow]]
-            [matthiasn.systems-toolbox.component :as stc]
-            [clojure.set :as set]))
+            [cognitect.transit :as t]
+            [matthiasn.systems-toolbox.component :as stc]))
+
+(def w (t/writer :json))
 
 (defn serialize [msg-type msg-payload msg-meta]
   (let [serializable [msg-type {:msg-payload msg-payload :msg-meta msg-meta}]]
-    (pr-str serializable)))
+    (t/write w serializable)))
 
 (defn new-window [{:keys [current-state cmp-state msg-payload]}]
   (let [{:keys [url width height window-id cached]} msg-payload]
@@ -161,12 +163,7 @@
     {:send-to-self [:window/new {:url "view.html"}]}))
 
 (defn cmp-map [cmp-id relay-types app-path]
-  (let [relay-types (set/union (set relay-types)
-                               #{:firehose/cmp-put
-                                 :firehose/cmp-recv
-                                 :firehose/cmp-publish-state
-                                 :firehose/cmp-recv-state})
-        relay-map (zipmap relay-types (repeat relay-msg))]
+  (let [relay-map (zipmap relay-types (repeat relay-msg))]
     {:cmp-id      cmp-id
      :state-fn    (fn [put-fn] {:state (atom {:app-path app-path})})
      :handler-map (merge relay-map

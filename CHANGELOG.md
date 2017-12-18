@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.20] - 2017-12-18
+### Changed
+- all relayed message types need to be specified
+- transit instead of edn
+
 ## [0.6.19] - 2017-12-05
 ### Changed
 - window-id as string
