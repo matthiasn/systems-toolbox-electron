@@ -10,7 +10,7 @@
   (let [serializable [msg-type {:msg-payload msg-payload :msg-meta msg-meta}]]
     (t/write w serializable)))
 
-(defn new-window [{:keys [current-state cmp-state msg-payload]}]
+(defn new-window [{:keys [current-state cmp-state msg-payload put-fn]}]
   (let [{:keys [url width height window-id cached]} msg-payload]
     (if (get-in current-state [:windows window-id])
       (do (info "WM: window id exists, not creating new one:" window-id) {})
@@ -58,15 +58,21 @@
             ready (fn [_]
                     (debug "ready" window-id)
                     (show)
-                    (dotimes [n 10] (js/setTimeout send-id (* n 1000))))]
+                    (dotimes [n 10] (js/setTimeout send-id (* n 1000))))
+            web-contents (.-webContents window)
+            handle-redirect (fn [ev url]
+                              (.preventDefault ev)
+                              (put-fn [:wm/open-external url]))]
         (info "Opening new window" url window-id)
         (.on window "focus" #(js/setTimeout focus 10))
         (when cached (.on new-spare-wc "did-finish-load" new-spare-init))
         (if spare
           (do (info "WM using spare" spare)
               (show)
-              (.send (.-webContents window) "window-id" (str window-id)))
-          (.on (.-webContents window) "did-finish-load" #(js/setTimeout show 10)))
+              (.send web-contents "window-id" (str window-id)))
+          (.on web-contents "did-finish-load" #(js/setTimeout show 10)))
+        (.on web-contents "will-navigate" handle-redirect)
+        (.on web-contents "new-window" handle-redirect)
         (.once window "ready-to-show" ready)
         (.on window "blur" blur)
         (.on window "close" close)
