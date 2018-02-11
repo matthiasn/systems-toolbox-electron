@@ -11,14 +11,15 @@
     (t/write w serializable)))
 
 (defn new-window [{:keys [current-state cmp-state msg-payload put-fn]}]
-  (let [{:keys [url width height window-id cached]} msg-payload]
+  (let [{:keys [url width height window-id cached opts]} msg-payload]
     (if (get-in current-state [:windows window-id])
       (do (info "WM: window id exists, not creating new one:" window-id) {})
-      (let [load-new (fn [url]
-                       (let [window (BrowserWindow.
-                                      (clj->js {:width  (or width 1200)
-                                                :height (or height 800)
-                                                :show   false}))]
+      (let [default-opts {:width  (or width 1200)
+                          :height (or height 800)
+                          :show   false}
+            window-opts (merge default-opts opts)
+            load-new (fn [url]
+                       (let [window (BrowserWindow. (clj->js window-opts))]
                          (info "WM load-new" url)
                          (.loadURL window url)
                          window))

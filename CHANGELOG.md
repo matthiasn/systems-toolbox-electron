@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.22] - 2018-02-11
+### Changed
+- additional opts for new window
+
 ## [0.6.21] - 2018-01-30
 ### Changed
 - :wm/open-external message for opening external links
