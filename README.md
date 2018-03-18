@@ -4,7 +4,7 @@ Building blocks for Electron-based desktop applications written in ClojureScript
 
 ## Usage
 
-See for example **[inspect](https://github.com/matthiasn/inspect)** or **[iWasWhere](https://github.com/matthiasn/iWasWhere)**.
+See for example **[inspect](https://github.com/matthiasn/inspect)** or **[meo](https://github.com/matthiasn/meo)**.
 
 ## License
 
