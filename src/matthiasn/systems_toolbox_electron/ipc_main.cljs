@@ -18,4 +18,6 @@
 
 (defn cmp-map [cmp-id]
   {:cmp-id   cmp-id
-   :state-fn state-fn})
+   :state-fn state-fn
+   :opts     {:in-chan  [:buffer 100]
+              :out-chan [:buffer 100]}})

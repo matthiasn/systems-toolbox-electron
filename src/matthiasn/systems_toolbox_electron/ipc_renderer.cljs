@@ -35,7 +35,8 @@
   {})
 
 (defn cmp-map [cmp-id relay-types]
-  (let [relay-types relay-types]
-    {:cmp-id      cmp-id
-     :state-fn    state-fn
-     :handler-map (zipmap relay-types (repeat relay-msg))}))
+  {:cmp-id      cmp-id
+   :state-fn    state-fn
+   :handler-map (zipmap relay-types (repeat relay-msg))
+   :opts        {:in-chan  [:buffer 100]
+                 :out-chan [:buffer 100]}})

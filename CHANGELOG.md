@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.24] - 2018-04-11
+### Changed
+- dependencies and buffering
+
 ## [0.6.22] - 2018-02-11
 ### Changed
 - additional opts for new window

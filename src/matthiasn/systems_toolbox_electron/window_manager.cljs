@@ -172,7 +172,9 @@
 (defn cmp-map [cmp-id relay-types app-path]
   (let [relay-map (zipmap relay-types (repeat relay-msg))]
     {:cmp-id      cmp-id
-     :state-fn    (fn [put-fn] {:state (atom {:app-path app-path})})
+     :state-fn    (fn [_put-fn] {:state (atom {:app-path app-path})})
+     :opts        {:in-chan  [:buffer 100]
+                   :out-chan [:buffer 100]}
      :handler-map (merge relay-map
                          {:window/new       new-window
                           :window/activate  activate
