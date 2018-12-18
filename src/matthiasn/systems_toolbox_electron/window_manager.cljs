@@ -2,7 +2,8 @@
   (:require [taoensso.timbre :refer-macros [info debug warn]]
             [electron :refer [app BrowserWindow]]
             [cognitect.transit :as t]
-            [matthiasn.systems-toolbox.component :as stc]))
+            [matthiasn.systems-toolbox.component :as stc]
+            [clojure.string :as s]))
 
 (def w (t/writer :json))
 
@@ -24,7 +25,9 @@
                          (.loadURL window url)
                          window))
             spare (when cached (:spare current-state))
-            url (str "file://" (:app-path current-state) "/" url)
+            url (if (s/includes? url "localhost")
+                  url
+                  (str "file://" (:app-path current-state) "/" url))
             new-spare (when cached (load-new url))
             new-spare-wc (when cached (.-webContents new-spare))
             new-spare-init #(let [js "window.location = ''"
