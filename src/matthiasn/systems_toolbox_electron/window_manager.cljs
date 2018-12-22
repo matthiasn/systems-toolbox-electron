@@ -15,9 +15,10 @@
   (let [{:keys [url width height window-id cached opts]} msg-payload]
     (if (get-in current-state [:windows window-id])
       (do (info "WM: window id exists, not creating new one:" window-id) {})
-      (let [default-opts {:width  (or width 1200)
-                          :height (or height 800)
-                          :show   false}
+      (let [default-opts {:width          (or width 1280)
+                          :height         (or height 800)
+                          :show           false
+                          :webPreferences {:nodeIntegration true}}
             window-opts (merge default-opts opts)
             load-new (fn [url]
                        (let [window (BrowserWindow. (clj->js window-opts))]

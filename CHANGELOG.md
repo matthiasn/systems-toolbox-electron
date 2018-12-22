@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.26] - 2018-12-19
+### Changed
+- dependencies 
+- fix electron deprecation warning
+
+## [0.6.25] - 2018-12-19
+### Changed
+- dependencies 
+- allow localhost urls
+
 ## [0.6.24] - 2018-04-11
 ### Changed
 - dependencies and buffering
