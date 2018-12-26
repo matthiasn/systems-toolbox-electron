@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 
+## [0.6.27] - 2018-12-26
+### Changed
+- support for restoring window at the same size and position 
+
 ## [0.6.26] - 2018-12-19
 ### Changed
 - dependencies 
