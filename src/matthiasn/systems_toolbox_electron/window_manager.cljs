@@ -12,7 +12,7 @@
     (t/write w serializable)))
 
 (defn new-window [{:keys [current-state cmp-state msg-payload put-fn]}]
-  (let [{:keys [url width height x y window-id cached opts]} msg-payload]
+  (let [{:keys [url width height x y window-id cached opts save-bounds]} msg-payload]
     (if (get-in current-state [:windows window-id])
       (do (info "WM: window id exists, not creating new one:" window-id) {})
       (let [default-opts {:width          (or width 1280)
@@ -68,7 +68,8 @@
             resized-moved (fn [_]
                             (let [bounds (js->clj (.getContentBounds window)
                                                   :keywordize-keys true)]
-                              (put-fn [:window/resized bounds])
+                              (when save-bounds
+                                (put-fn [:window/resized bounds]))
                               (debug "resize" bounds)))]
         (.on window "focus" #(js/setTimeout focus 10))
         (.on window "resize" resized-moved)
