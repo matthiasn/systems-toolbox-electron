@@ -26,7 +26,7 @@
                          (.loadURL window url)
                          window))
             spare (when cached (:spare current-state))
-            url (if (s/includes? url "localhost")
+            url (if (s/includes? url "http")
                   url
                   (str "file://" (:app-path current-state) "/" url))
             new-spare (when cached (load-new url))
